@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/services/user_service.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/custom_button.dart' as custom;
 import '../../onboarding/screens/name_input_screen.dart';
@@ -94,6 +95,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
   
   void _handleContinue() {
     if (_isValid) {
+      // Email veya telefonu kaydet
+      if (widget.verificationType == VerificationType.email) {
+        UserService().setEmail(widget.contact, verified: true);
+      } else {
+        UserService().setPhone(widget.contact, verified: true);
+      }
+      
       // Doğrulama başarılı - onboarding'e yönlendir
       Navigator.pushReplacement(
         context,

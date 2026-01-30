@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/services/user_service.dart';
 import '../../auth/widgets/gradient_background.dart';
 import '../../auth/widgets/custom_button.dart' as custom;
 import 'birthday_picker_screen.dart';
@@ -42,6 +43,7 @@ class _PronounsInputScreenState extends State<PronounsInputScreen> with SingleTi
   
   void _handleContinue() {
     if (_selectedPronoun != null) {
+      UserService().setPronouns(_selectedPronoun);
       Navigator.push(
         context,
         MaterialPageRoute(

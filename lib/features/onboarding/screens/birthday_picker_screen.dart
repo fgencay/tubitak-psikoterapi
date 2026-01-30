@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/services/user_service.dart';
 import '../../auth/widgets/gradient_background.dart';
 import '../../auth/widgets/custom_button.dart' as custom;
 import 'permissions_screen.dart';
@@ -26,6 +27,7 @@ class _BirthdayPickerScreenState extends State<BirthdayPickerScreen> {
   }
   
   void _handleContinue() {
+    UserService().setBirthday(_selectedDate);
     Navigator.push(
       context,
       MaterialPageRoute(
