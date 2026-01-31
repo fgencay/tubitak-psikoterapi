@@ -6,7 +6,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/services/user_service.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/custom_button.dart' as custom;
-import '../../onboarding/screens/name_input_screen.dart';
+import 'password_create_screen.dart';
 
 enum VerificationType { email, phone }
 
@@ -102,11 +102,11 @@ class _VerificationScreenState extends State<VerificationScreen> {
         UserService().setPhone(widget.contact, verified: true);
       }
       
-      // Doğrulama başarılı - onboarding'e yönlendir
+      // Doğrulama başarılı - şifre oluşturma ekranına yönlendir
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const NameInputScreen(),
+          builder: (context) => const PasswordCreateScreen(),
         ),
       );
     }
@@ -239,10 +239,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.white,
-          width: 2,
-        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
@@ -265,6 +261,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
           decoration: const InputDecoration(
             counterText: '',
             border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
             contentPadding: EdgeInsets.zero,
           ),
           style: const TextStyle(

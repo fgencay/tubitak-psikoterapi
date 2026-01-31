@@ -5,6 +5,7 @@ import '../widgets/gradient_background.dart';
 import '../widgets/custom_button.dart' as custom;
 import 'phone_input_screen.dart';
 import 'email_input_screen.dart';
+import 'login_screen.dart';
 
 /// Get Started (Başlangıç) Ekranı
 class GetStartedScreen extends StatelessWidget {
@@ -19,6 +20,52 @@ class GetStartedScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
             child: Column(
               children: [
+                // Zaten hesabım var butonu
+                Transform.translate(
+                  offset: const Offset(16, 0),
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                        );
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 8,
+                        ),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Zaten hesabım var',
+                            style: const TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          const Icon(
+                            Icons.arrow_forward_rounded,
+                            color: AppColors.textSecondary,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                
                 const Spacer(flex: 2),
                 
                 // Logo (İki siyah damlacık)

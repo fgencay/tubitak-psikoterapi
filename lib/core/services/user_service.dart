@@ -17,6 +17,7 @@ class UserService {
   String? _phone;
   bool _isEmailVerified = false;
   bool _isPhoneVerified = false;
+  String? _password;
   
   /// Kullanıcı adını kaydet
   void setUserName(String name) {
@@ -127,6 +128,16 @@ class UserService {
     return _isPhoneVerified;
   }
   
+  /// Şifre kaydet
+  void setPassword(String? password) {
+    _password = password;
+  }
+  
+  /// Şifre al
+  String? getPassword() {
+    return _password;
+  }
+  
   /// Tüm kullanıcı bilgilerini temizle (çıkış yap / hesap sil)
   void clearAll() {
     _userName = null;
@@ -138,5 +149,6 @@ class UserService {
     _phone = null;
     _isEmailVerified = false;
     _isPhoneVerified = false;
+    _password = null;
   }
 }

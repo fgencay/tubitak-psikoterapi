@@ -1,51 +1,70 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/constants/app_strings.dart';
+import '../../../core/services/user_service.dart';
 import '../widgets/gradient_background.dart';
 import '../widgets/custom_button.dart' as custom;
-import 'verification_screen.dart';
+import '../../onboarding/screens/name_input_screen.dart';
 
-/// Telefon numarası giriş ekranı
-class PhoneInputScreen extends StatefulWidget {
-  const PhoneInputScreen({super.key});
+/// Şifre oluşturma ekranı
+class PasswordCreateScreen extends StatefulWidget {
+  const PasswordCreateScreen({super.key});
 
   @override
-  State<PhoneInputScreen> createState() => _PhoneInputScreenState();
+  State<PasswordCreateScreen> createState() => _PasswordCreateScreenState();
 }
 
-class _PhoneInputScreenState extends State<PhoneInputScreen> {
-  final TextEditingController _phoneController = TextEditingController();
-  bool _isValid = false;
+class _PasswordCreateScreenState extends State<PasswordCreateScreen> {
+  final TextEditingController _passwordController = TextEditingController();
+  
+  bool _isPasswordVisible = false;
+  bool _hasMinLength = false;
+  bool _hasUpperCase = false;
+  bool _hasLowerCase = false;
+  bool _hasNumber = false;
+  bool _hasSpecialChar = false;
   
   @override
   void initState() {
     super.initState();
-    _phoneController.addListener(_validatePhone);
+    _passwordController.addListener(_validatePassword);
   }
   
   @override
   void dispose() {
-    _phoneController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
   
-  void _validatePhone() {
-    final phone = _phoneController.text.replaceAll(' ', '');
+  void _validatePassword() {
+    final password = _passwordController.text;
+    
     setState(() {
-      _isValid = phone.length >= 10;
+      _hasMinLength = password.length >= 8;
+      _hasUpperCase = password.contains(RegExp(r'[A-Z]'));
+      _hasLowerCase = password.contains(RegExp(r'[a-z]'));
+      _hasNumber = password.contains(RegExp(r'[0-9]'));
+      _hasSpecialChar = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
     });
+  }
+  
+  bool get _isValid {
+    return _hasMinLength &&
+           _hasUpperCase &&
+           _hasLowerCase &&
+           _hasNumber &&
+           _hasSpecialChar;
   }
   
   void _handleContinue() {
     if (_isValid) {
-      Navigator.push(
+      // Şifreyi kaydet
+      UserService().setPassword(_passwordController.text);
+      
+      // Onboarding'e yönlendir
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => VerificationScreen(
-            verificationType: VerificationType.phone,
-            contact: '${AppStrings.phoneNumberCountryCode} ${_phoneController.text}',
-          ),
+          builder: (context) => const NameInputScreen(),
         ),
       );
     }
@@ -74,7 +93,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
               
               // İçerik
               Expanded(
-                child: Padding(
+                child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 32.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +102,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                       
                       // Başlık
                       Text(
-                        AppStrings.phoneNumberTitle,
+                        'Şifre Oluştur',
                         style: Theme.of(context).textTheme.displayMedium?.copyWith(
                           fontSize: 32,
                           fontWeight: FontWeight.w600,
@@ -94,7 +113,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                       
                       // Alt başlık
                       Text(
-                        AppStrings.phoneNumberSubtitle,
+                        'Hesabınızı korumak için güçlü bir şifre oluşturun',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: AppColors.textSecondary,
                           fontSize: 15,
@@ -104,40 +123,14 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                       
                       const SizedBox(height: 32),
                       
-                      // Telefon input
+                      // Şifre input
                       TextField(
-                        controller: _phoneController,
-                        keyboardType: TextInputType.phone,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(10),
-                        ],
+                        controller: _passwordController,
+                        obscureText: !_isPasswordVisible,
                         decoration: InputDecoration(
-                          hintText: AppStrings.phoneNumberPlaceholder,
+                          hintText: 'Şifre',
                           filled: true,
                           fillColor: AppColors.inputBackground,
-                          prefixIcon: Padding(
-                            padding: const EdgeInsets.only(left: 20, right: 12),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text(
-                                  AppStrings.phoneNumberCountryCode,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: AppColors.textPrimary,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Container(
-                                  width: 1,
-                                  height: 24,
-                                  color: AppColors.textPrimary.withOpacity(0.2),
-                                ),
-                              ],
-                            ),
-                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
                             borderSide: BorderSide(
@@ -161,6 +154,19 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                             horizontal: 20,
                             vertical: 16,
                           ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              color: AppColors.textSecondary,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
                         ),
                         style: const TextStyle(
                           fontSize: 16,
@@ -168,11 +174,26 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                         ),
                       ),
                       
-                      const Spacer(),
+                      const SizedBox(height: 12),
+                      
+                      // Şifre gereksinimleri - tek satır
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Text(
+                          'En az 8 karakter, büyük harf, küçük harf, rakam ve özel karakter içermelidir',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textSecondary.withOpacity(0.6),
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 32),
                       
                       // Continue butonu
                       custom.CustomButton(
-                        text: AppStrings.continueButton,
+                        text: 'Devam',
                         buttonStyle: custom.ButtonStyle.black,
                         isEnabled: _isValid,
                         onPressed: _handleContinue,
@@ -189,6 +210,5 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       ),
     );
   }
+  
 }
-
-

@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/services/user_service.dart';
+import '../../../core/constants/app_strings.dart';
 import '../widgets/avatar_selector_dialog.dart';
 import '../../auth/screens/get_started_screen.dart';
 
@@ -166,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     
     if (currentEmail != null && !isVerified) {
       // Email var ama doğrulanmamış, doğrulama kodu gönder
-      _showVerificationCodeDialog(currentEmail, isEmail: true);
+      _showEmailVerificationCodeDialog(currentEmail);
     } else if (currentEmail != null && isVerified) {
       // Email var ve doğrulanmış, tekrar doğrulama sorgusu
       _showEmailVerificationDialog(currentEmail);
@@ -182,7 +184,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     
     if (currentPhone != null && !isVerified) {
       // Telefon var ama doğrulanmamış, doğrulama kodu gönder
-      _showVerificationCodeDialog(currentPhone, isEmail: false);
+      _showPhoneVerificationCodeDialog(currentPhone);
     } else if (currentPhone != null && isVerified) {
       // Telefon var ve doğrulanmış, tekrar doğrulama sorgusu
       _showPhoneVerificationDialog(currentPhone);
@@ -190,178 +192,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // Telefon yok, telefon ekle
       _showPhoneInputDialog();
     }
-  }
-  
-  void _showPhoneInputDialog() {
-    final phoneController = TextEditingController();
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: Text(
-          'Telefon Ekle',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: phoneController,
-              keyboardType: TextInputType.phone,
-              decoration: InputDecoration(
-                hintText: '5XX XXX XX XX',
-                prefixText: '+90 ',
-                prefixStyle: const TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textPrimary,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: AppColors.textPrimary.withOpacity(0.3),
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: AppColors.textPrimary.withOpacity(0.3),
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: AppColors.textPrimary,
-                    width: 2,
-                  ),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'İptal',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final phone = phoneController.text.trim();
-              if (phone.isNotEmpty) {
-                Navigator.pop(context);
-                _showVerificationCodeDialog(
-                  '+90 $phone',
-                  isEmail: false,
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.textPrimary,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 12,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
-              'Devam',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  
-  void _showPhoneVerificationDialog(String phone) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: Text(
-          'Telefon Doğrulaması',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Telefon numaranıza doğrulama kodu göndermek ister misiniz?',
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              phone,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'İptal',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _showVerificationCodeDialog(phone, isEmail: false);
-            },
-            child: Text(
-              'Kod Gönder',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: AppColors.primary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
   
   void _showEmailInputDialog() {
@@ -433,7 +263,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               final email = emailController.text.trim();
               if (email.isNotEmpty) {
                 Navigator.pop(context);
-                _showVerificationCodeDialog(email, isEmail: true);
+                _showEmailVerificationCodeDialog(email);
               }
             },
             style: ElevatedButton.styleFrom(
@@ -512,7 +342,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _showVerificationCodeDialog(email, isEmail: true);
+              _showEmailVerificationCodeDialog(email);
             },
             child: Text(
               'Kod Gönder',
@@ -528,26 +358,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
   
-  void _showVerificationCodeDialog(String contact, {required bool isEmail}) {
+  void _showEmailVerificationCodeDialog(String email) {
     final codeController = TextEditingController();
     
-    // Email veya telefonu doğrulanmamış olarak kaydet
+    // Email'i doğrulanmamış olarak kaydet
     setState(() {
-      if (isEmail) {
-        _userService.setEmail(contact, verified: false);
-      } else {
-        _userService.setPhone(contact, verified: false);
-      }
+      _userService.setEmail(email, verified: false);
     });
     
     // TODO: Gerçek API'ye kod gönderme isteği
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          isEmail
-              ? '$contact adresine doğrulama kodu gönderildi'
-              : '$contact numarasına doğrulama kodu gönderildi',
-        ),
+        content: Text('$email adresine doğrulama kodu gönderildi'),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       ),
@@ -571,9 +393,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              isEmail
-                  ? 'E-posta adresinize gönderilen 6 haneli kodu girin'
-                  : 'Telefon numaranıza gönderilen 6 haneli kodu girin',
+              'E-posta adresinize gönderilen 6 haneli kodu girin',
               style: TextStyle(
                 fontSize: 16,
                 color: AppColors.textSecondary,
@@ -641,21 +461,351 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Navigator.pop(context);
                 
                 setState(() {
-                  if (isEmail) {
-                    _userService.setEmail(contact, verified: true);
-                  } else {
-                    _userService.setPhone(contact, verified: true);
-                  }
+                  _userService.setEmail(email, verified: true);
                 });
                 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      isEmail
-                          ? 'E-posta başarıyla doğrulandı!'
-                          : 'Telefon başarıyla doğrulandı!',
+                  const SnackBar(
+                    content: Text('E-posta başarıyla doğrulandı!'),
+                    duration: Duration(seconds: 2),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.textPrimary,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 12,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text(
+              'Doğrula',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  void _showPhoneInputDialog() {
+    final phoneController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(
+          'Telefon Ekle',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                // Ülke kodu
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: AppColors.textPrimary.withOpacity(0.3),
                     ),
-                    duration: const Duration(seconds: 2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    AppStrings.phoneNumberCountryCode,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Telefon input
+                Expanded(
+                  child: TextField(
+                    controller: phoneController,
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10),
+                    ],
+                    decoration: InputDecoration(
+                      hintText: '5xx xxx xx xx',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: AppColors.textPrimary.withOpacity(0.3),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: AppColors.textPrimary.withOpacity(0.3),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: AppColors.textPrimary,
+                          width: 2,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'İptal',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final phone = phoneController.text.trim();
+              if (phone.length >= 10) {
+                Navigator.pop(context);
+                final fullPhone = '${AppStrings.phoneNumberCountryCode} $phone';
+                _showPhoneVerificationCodeDialog(fullPhone);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.textPrimary,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 12,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text(
+              'Devam',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  void _showPhoneVerificationDialog(String phone) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(
+          'Telefon Doğrulaması',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Telefon numaranıza doğrulama kodu göndermek ister misiniz?',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              phone,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'İptal',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _showPhoneVerificationCodeDialog(phone);
+            },
+            child: Text(
+              'Kod Gönder',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  void _showPhoneVerificationCodeDialog(String phone) {
+    final codeController = TextEditingController();
+    
+    // Telefonu doğrulanmamış olarak kaydet
+    setState(() {
+      _userService.setPhone(phone, verified: false);
+    });
+    
+    // TODO: Gerçek API'ye kod gönderme isteği
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$phone numarasına doğrulama kodu gönderildi'),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(
+          'Doğrulama Kodu',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Telefon numaranıza gönderilen 6 haneli kodu girin',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: codeController,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              maxLength: 6,
+              decoration: InputDecoration(
+                hintText: '000000',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: AppColors.textPrimary.withOpacity(0.3),
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: AppColors.textPrimary.withOpacity(0.3),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: AppColors.textPrimary,
+                    width: 2,
+                  ),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                counterText: '',
+              ),
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 8,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'İptal',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final code = codeController.text.trim();
+              if (code.length == 6) {
+                // TODO: Kodu backend'e doğrulat
+                Navigator.pop(context);
+                
+                setState(() {
+                  _userService.setPhone(phone, verified: true);
+                });
+                
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Telefon numarası başarıyla doğrulandı!'),
+                    duration: Duration(seconds: 2),
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
