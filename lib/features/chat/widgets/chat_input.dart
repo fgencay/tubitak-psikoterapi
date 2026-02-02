@@ -55,7 +55,7 @@ class _ChatInputState extends State<ChatInput> {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.4),
             border: Border(
@@ -73,11 +73,11 @@ class _ChatInputState extends State<ChatInput> {
             GestureDetector(
               onTap: widget.onCamera,
               child: Container(
-                width: 40,
-                height: 40,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(24),
                   border: Border.all(
                     color: Colors.white.withOpacity(0.2),
                     width: 1,
@@ -86,7 +86,7 @@ class _ChatInputState extends State<ChatInput> {
                 child: Icon(
                   Icons.camera_alt_rounded,
                   color: AppColors.textPrimary,
-                  size: 20,
+                  size: 24,
                 ),
               ),
             ),
@@ -98,7 +98,7 @@ class _ChatInputState extends State<ChatInput> {
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(28),
                   border: Border.all(
                     color: Colors.white.withOpacity(0.2),
                     width: 1,
@@ -115,16 +115,16 @@ class _ChatInputState extends State<ChatInput> {
                           hintText: 'Mesaj yaz...',
                           hintStyle: TextStyle(
                             color: AppColors.textSecondary,
-                            fontSize: 15,
+                            fontSize: 16,
                           ),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
+                            horizontal: 24,
+                            vertical: 14,
                           ),
                         ),
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 16,
                           color: AppColors.textPrimary,
                         ),
                       ),
@@ -135,11 +135,11 @@ class _ChatInputState extends State<ChatInput> {
                       GestureDetector(
                         onTap: widget.onVoice,
                         child: Padding(
-                          padding: const EdgeInsets.only(right: 12),
+                          padding: const EdgeInsets.only(right: 16),
                           child: Icon(
                             Icons.mic_rounded,
                             color: AppColors.textSecondary,
-                            size: 24,
+                            size: 28,
                           ),
                         ),
                       ),
@@ -154,13 +154,13 @@ class _ChatInputState extends State<ChatInput> {
             GestureDetector(
               onTap: _hasText ? _handleSend : null,
               child: Container(
-                width: 40,
-                height: 40,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
                   color: _hasText 
                       ? AppColors.textPrimary
                       : Colors.white.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(24),
                   border: _hasText ? null : Border.all(
                     color: Colors.white.withOpacity(0.2),
                     width: 1,
@@ -176,7 +176,7 @@ class _ChatInputState extends State<ChatInput> {
                 child: Icon(
                   Icons.arrow_upward_rounded,
                   color: _hasText ? Colors.white : AppColors.textSecondary,
-                  size: 20,
+                  size: 24,
                 ),
               ),
             ),

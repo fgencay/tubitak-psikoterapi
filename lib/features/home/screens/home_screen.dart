@@ -140,7 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Günün sözü kartı
                   const QuoteCard(),
                   
-                  const SizedBox(height: 32),
+                  // Navigation bar arkasında kalan içerik için boşluk
+                  const SizedBox(height: 100),
                 ],
               ),
             ),

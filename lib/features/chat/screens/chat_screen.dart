@@ -251,82 +251,53 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Sol taraf - Geri ok ve geçmiş sohbetler
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            Icons.arrow_back_rounded,
-                            color: AppColors.textPrimary,
-                            size: 24,
-                          ),
-                          onPressed: widget.onBackToHome,
-                        ),
-                        Builder(
-                          builder: (context) => Container(
-                            margin: const EdgeInsets.only(top: 4, left: 8),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {
-                                  Scaffold.of(context).openDrawer();
-                                },
-                                borderRadius: BorderRadius.circular(10),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        width: 20,
-                                        height: 2,
-                                        decoration: BoxDecoration(
-                                          color: AppColors.textPrimary,
-                                          borderRadius: BorderRadius.circular(1),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Container(
-                                        width: 20,
-                                        height: 2,
-                                        decoration: BoxDecoration(
-                                          color: AppColors.textPrimary,
-                                          borderRadius: BorderRadius.circular(1),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Container(
-                                        width: 20,
-                                        height: 2,
-                                        decoration: BoxDecoration(
-                                          color: AppColors.textPrimary,
-                                          borderRadius: BorderRadius.circular(1),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Sol taraf - Sadece Geri Butonu
                     IconButton(
                       icon: Icon(
-                        Icons.more_vert_rounded,
+                        Icons.arrow_back_rounded,
                         color: AppColors.textPrimary,
                         size: 24,
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const TemporaryChatScreen(),
+                      onPressed: widget.onBackToHome,
+                    ),
+                    
+                    // Sağ taraf - Aksiyonlar (Geçmiş + Gizli Sohbet)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Geçmiş Sohbetler
+                        Builder(
+                          builder: (context) => IconButton(
+                            icon: Icon(
+                              Icons.history_rounded,
+                              color: AppColors.textPrimary,
+                              size: 24,
+                            ),
+                            tooltip: 'Geçmiş Sohbetler',
+                            onPressed: () {
+                              Scaffold.of(context).openDrawer();
+                            },
                           ),
-                        );
-                      },
+                        ),
+                        
+                        // Gizli Sohbet
+                        IconButton(
+                          icon: Icon(
+                            Icons.visibility_off_outlined,
+                            color: AppColors.textPrimary,
+                            size: 24,
+                          ),
+                          tooltip: 'Gizli sohbet',
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const TemporaryChatScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
